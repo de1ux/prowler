@@ -2,6 +2,12 @@ Prowler
 =======
 *Prowl your PRs*
 
+Use prowler to get a quick overview of the state of your PRs.
+
+Quickly jump to 
+* merge conflicts
+* failing CI runs
+
 ![Sweet demo](demo.png)
 
 ## Setup
