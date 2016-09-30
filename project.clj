@@ -1,5 +1,5 @@
 (defproject prowler "0.1.0-SNAPSHOT"
-  :description "CI status tracker"
+  :description "OSX widget for managing your PRs"
   :url "https://github.com/de1ux/prowler"
   :main prowler.core
   :license {:name "Eclipse Public License"
