@@ -1,27 +1,19 @@
 Prowler
 =======
+*Prowl your PRs*
 
-### Setup
-1) Go to System Preferences > Security & Privacy, allow apps downloaded from anywhere
+## Setup
+1) Allow app downloaded from anywhere (System Preferences > Security & Privacy)
 
-2) Go to https://github.com/settings/tokens and generate a new personal access token. Allow access to everything except deleting repos. Save this token somewhere for the next step
+2) [Create an API token on Github](https://github.com/settings/tokens) for Prowler to use.
 
-3) Save .prowler.conf to your home directory. The configuration file is an ordered array with three expected values:
-    a) your username
-    b) the repos you wish to track (prowl)
-    c) your access token
+3) [Create a config](###Config) with the settings Prowler should use, save it to ~/.prowler.conf
 
-4) Edit .prowler.conf to include your name, access token, and desired repos. Note that the repos must be entered with escaping backslashes (see example)
+4) Unzip the latest Prowler release and move it to your Applications
 
-5) Save and exit
+5) Start Prowler
 
-6) Unzip Prowler.zip
-
-7) Move Prowler.app to your Applications
-
-8) Start Prowler
-
-### Usage
+## Usage
 Click on the title to go to the PR.
 
 Click on the CI labels to go to the CI.
@@ -32,4 +24,71 @@ Labels marked in RED are failed CI runs.
 
 Labels marked in GREEN are passing CI runs.
 
-Titles marked with a red circle and bar mean they have merge conflicts.
+Titles marked with a red circle and bar have merge conflicts.
+
+## Config
+Example
+```
+{
+  "username" : "de1ux",
+  "repos" : [ "Workiva/w_flux", "Workiva/w_transport", "Workiva/w_module" ],
+  "token" : "2jk412jlk151lkj1jl1bjk51l21klj1j1jl1n1k1",
+  "services" : [ "jenkins", "travis-ci" ],
+  "success_states" : [ "success" ],
+  "pending_states" : [ "pending" ],
+  "failure_states" : [ "failure", "failed", "error" ],
+  "hideMergeConflicts": false,
+  "showAllPrs": false,
+}
+```
+
+#### username
+```
+String: Github username the token has been generated under
+```
+
+#### repos
+```
+List<String>: List in the form of owner/repository.
+              The repos Prowler should search for PRs in.
+```
+
+#### services
+```
+List<String>: The CI services that Prowler should monitor on PRs.
+              Examples: jenkins, travis-ci
+```
+
+#### success_states
+```
+List<String>: The list of successful states that the CI services can enter.
+              Examples: success, successful, succeeded
+```
+
+#### pending_states
+```
+List<String>: The list of pending states that the CI services can enter.
+              Examples: pending, queued, waiting
+```
+
+#### failure_states
+```
+List<String>: The list of failure states that the CI services can enter.
+              Examples: failure, failed, error
+```
+
+#### hideMergeConflicts
+```
+bool: Whether to display merge conflicts, if any, on your PRs
+```
+
+#### showAllPrs
+```
+bool: True if you want to see ALL PRs in your repos. False shows only
+      your PRs.
+```
+
+## Thanks
+[Workiva](https://www.workiva.com/)
+
+[BitBar](https://github.com/matryer/bitbar)
