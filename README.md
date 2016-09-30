@@ -2,6 +2,8 @@ Prowler
 =======
 *Prowl your PRs*
 
+![Sweet demo](demo.png)
+
 ## Setup
 1) Allow app downloaded from anywhere (System Preferences > Security & Privacy)
 
