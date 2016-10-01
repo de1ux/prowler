@@ -4,7 +4,7 @@ Prowler
 
 Use prowler to get a quick overview of the state of your PRs.
 
-Quickly jump to 
+Quickly jump to
 * merge conflicts
 * failing CI runs
 
@@ -37,17 +37,7 @@ Titles marked with a red circle and bar have merge conflicts.
 ## Config
 Example
 ```
-{
-  "username" : "de1ux",
-  "repos" : [ "Workiva/w_flux", "Workiva/w_transport", "Workiva/w_module" ],
-  "token" : "2jk412jlk151lkj1jl1bjk51l21klj1j1jl1n1k1",
-  "services" : [ "jenkins", "travis-ci" ],
-  "success_states" : [ "success" ],
-  "pending_states" : [ "pending" ],
-  "failure_states" : [ "failure", "failed", "error" ],
-  "hideMergeConflicts": false,
-  "showAllPrs": false,
-}
+
 ```
 
 #### username
