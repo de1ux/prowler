@@ -42,9 +42,9 @@ Example
   "repos" : [ "Workiva/w_flux", "Workiva/w_transport", "Workiva/w_module" ],
   "token" : "2jk412jlk151lkj1jl1bjk51l21klj1j1jl1n1k1",
   "services" : [ "jenkins", "travis-ci" ],
-  "success_states" : [ "success" ],
-  "pending_states" : [ "pending" ],
-  "failure_states" : [ "failure", "failed", "error" ],
+  "successStates" : [ "success" ],
+  "pendingStates" : [ "pending" ],
+  "failureStates" : [ "failure", "failed", "error" ],
   "hideMergeConflicts": false,
   "showAllPrs": false,
 }
@@ -67,19 +67,19 @@ List<String>: The CI services that Prowler should monitor on PRs.
               Examples: jenkins, travis-ci
 ```
 
-#### success_states
+#### successStates
 ```
 List<String>: The list of successful states that the CI services can enter.
               Examples: success, successful, succeeded
 ```
 
-#### pending_states
+#### pendingStates
 ```
 List<String>: The list of pending states that the CI services can enter.
               Examples: pending, queued, waiting
 ```
 
-#### failure_states
+#### failureStates
 ```
 List<String>: The list of failure states that the CI services can enter.
               Examples: failure, failed, error
