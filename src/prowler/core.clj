@@ -55,11 +55,11 @@
 
 (defn statusToBitBarFormat [ci successStates pendingStates failureStates] (str " | href=" (get-in ci ["target_url"]) (getColorFromStatus (get-in ci ["state"]) successStates pendingStates failureStates)))
 
-(defn prToStatusesToBitBarFormat [pr successStates pendingStates failureStates] (s/join ";" (map (fn [ci] (str "⌊ " (get-in ci ["context"]) (statusToBitBarFormat ci successStates pendingStates failureStates))) (remove #(nil? (get-in % ["context"])) (get-in pr [:ci])))))
+(defn prToStatusesToBitBarFormat [pr successStates pendingStates failureStates] (s/join ";" (map (fn [ci] (str "\\xE2\\x8C\\x8A " (get-in ci ["context"]) (statusToBitBarFormat ci successStates pendingStates failureStates))) (remove #(nil? (get-in % ["context"])) (get-in pr [:ci])))))
 
 (defn prsToBitBarFormat [repo successStates pendingStates failureStates hideMergeConflicts] (s/join ";" (map (fn [pr] (str (get-in pr [:title]) " " (if (or (get-in pr [:mergeable]) hideMergeConflicts) "" "🚫") " | href=" (get-in pr [:url]) ";" (prToStatusesToBitBarFormat pr successStates pendingStates failureStates))) (get-in repo [:prs]))))
 
-(defn toBitBarFormat [manifest successStates pendingStates failureStates hideMergeConflicts] (str "❦;" (s/join ";" (map (fn [repo] (str "---;" (get-in repo [:repo]) " | size=20" ";" (prsToBitBarFormat repo successStates pendingStates failureStates hideMergeConflicts))) manifest))))
+(defn toBitBarFormat [manifest successStates pendingStates failureStates hideMergeConflicts] (str "\\xE2\\x9D\\xA6;" (s/join ";" (map (fn [repo] (str "---;" (get-in repo [:repo]) " | size=20" ";" (prsToBitBarFormat repo successStates pendingStates failureStates hideMergeConflicts))) manifest))))
 
 (defn createManifest [userName repos token services successStates pendingStates failureStates hideMergeConflicts showAllPrs] (println (toBitBarFormat (map (fn [repo]
                                                                                                                                {:repo repo

@@ -26,5 +26,3 @@ mkdir -p Prowler.app/Contents/SharedSupport/bin
 cp  ../target/prowler-0.1.0-SNAPSHOT-standalone.jar Prowler.app/Contents/SharedSupport/bin/
 chmod +x Prowler.app/Contents/SharedSupport/bin/prowler-0.1.0-SNAPSHOT-standalone.jar
 popd
-
-cp -R release/Prowler.app .
