@@ -66,7 +66,7 @@
                                                                                                                                 :prs (fetchStatuses (filterPullRequestsByUser (fetchRepo repo token) userName showAllPrs) repo token services)
                                                                                                                                 :recents (fetchRecents userName token)}) repos) successStates pendingStates failureStates hideMergeConflicts)))
 
-(defn getConfigDefaults [] {:username DEFAULT_USERNAME :repos DEFAULT_REPOS :token DEFAULT_TOKEN :services [] :success_states SUCCESS_STATES :pending_states PENDING_STATES :failure_states FAILURE_STATES :hideMergeConflicts false :showAllPrs false})
+(defn getConfigDefaults [] {:username DEFAULT_USERNAME :repos DEFAULT_REPOS :token DEFAULT_TOKEN :services [] :successStates SUCCESS_STATES :pendingStates PENDING_STATES :failureStates FAILURE_STATES :hideMergeConflicts false :showAllPrs false})
 
 (defn getConfigPath [] (str (System/getenv "HOME") "/" CONFIG_NAME))
 
@@ -76,6 +76,6 @@
 
 (defn getConfig [] (loadConfig (if (not (.exists (io/as-file (getConfigPath)))) (createConfig))))
 
-(defn explodeConfig [config] [(get-in config ["username"]) (get-in config ["repos"]) (get-in config ["token"]) (get-in config ["services"]) (get-in config ["success_states"]) (get-in config ["pending_states"]) (get-in config ["failure_states"]) (get-in config ["hideMergeConflicts"]) (get-in config ["showAllPrs"])])
+(defn explodeConfig [config] [(get-in config ["username"]) (get-in config ["repos"]) (get-in config ["token"]) (get-in config ["services"]) (get-in config ["successStates"]) (get-in config ["pendingStates"]) (get-in config ["failureStates"]) (get-in config ["hideMergeConflicts"]) (get-in config ["showAllPrs"])])
 
 (defn -main [] (apply createManifest (explodeConfig (getConfig))))
