@@ -12,8 +12,6 @@ import (
 	"time"
 )
 
-const github_api = "https://api.github.com"
-
 type config struct {
 	Username string   `json:"username"`
 	Repos    []string `json:"repos,omitempty"` // blank == all
@@ -43,7 +41,7 @@ func (cfg *config) process() {
 }
 
 func (cfg *config) get(uri string) (*http.Response, error) {
-	return http.Get(github_api + uri + "?oauth_token=" + cfg.Token)
+	return http.Get("https://api.github.com" + uri + "?oauth_token=" + cfg.Token)
 }
 
 func (cfg *config) String() string {
