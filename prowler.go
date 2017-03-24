@@ -12,6 +12,24 @@ import (
 	"time"
 )
 
+type status int
+
+const (
+	failed status = iota
+	pending
+	success
+)
+
+func (s status) String() string {
+	switch s {
+	case pending:
+		return "#f89406"
+	case success:
+		return "#00bb00"
+	}
+	return "#bb0000"
+}
+
 type config struct {
 	Username string   `json:"username"`
 	Repos    []string `json:"repos,omitempty"` // blank == all
@@ -25,6 +43,7 @@ type config struct {
 
 	// Used for processing
 	wg       sync.WaitGroup
+	color    status
 	metadata []repoMeta
 	duration time.Duration
 }
@@ -37,6 +56,18 @@ func (cfg *config) process() {
 		go cfg.metadata[i].process(cfg, repo)
 	}
 	cfg.wg.Wait()
+
+	cfg.color = success
+	for _, repo := range cfg.metadata {
+		for _, pr := range repo.prs {
+			if !pr.Merge {
+				cfg.color = failed
+			}
+			if cfg.color > pr.color {
+				cfg.color = pr.color
+			}
+		}
+	}
 	cfg.duration = time.Since(start)
 }
 
@@ -124,6 +155,7 @@ type prMeta struct {
 	// processing stuff
 	stats []*statsMeta
 	res   *http.Response
+	color status
 	err   error
 }
 
@@ -169,6 +201,14 @@ func (m *prMeta) process(ctx *config) {
 			}
 		}
 	}
+
+	// Setting color based on children
+	m.color = success
+	for _, stat := range m.stats {
+		if m.color > stat.color {
+			m.color = stat.color
+		}
+	}
 }
 
 func (m prMeta) String() string {
@@ -184,7 +224,7 @@ func (m prMeta) String() string {
 		mergable = "\U0001F6AB"
 	}
 	// TODO: set color based on sub-statuses
-	return fmt.Sprintf("%s %s| href=%s\n%s", m.Title, mergable, m.Link, strings.Join(out, "\n"))
+	return fmt.Sprintf("%s %s| href=%s color=%s\n%s", m.Title, mergable, m.Link, m.color, strings.Join(out, "\n"))
 }
 
 type statsMeta struct {
@@ -192,20 +232,20 @@ type statsMeta struct {
 	URL   string    `json:"target_url"`
 	State string    `json:"state"`
 	Stamp time.Time `json:"updated_at"`
-	color string
+	color status
 }
 
 func (m *statsMeta) process(ctx *config) {
-	m.color = "#bb000"
+	m.color = failed
 	for _, state := range ctx.Successs {
 		if m.State == state {
-			m.color = "#00bb00"
+			m.color = success
 			return
 		}
 	}
 	for _, state := range ctx.Pendings {
 		if m.State == state {
-			m.color = "#f89406"
+			m.color = pending
 			return
 		}
 	}
@@ -227,5 +267,5 @@ func main() {
 	// Process in parallel
 	cfg.process()
 	// TODO: set logo color based on overall status
-	fmt.Println("\u2766 | color=#00bb00\n---\n" + cfg.String())
+	fmt.Printf("\u2766 | color=%s\n---\n%s", cfg.color, cfg.String())
 }
