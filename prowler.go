@@ -12,6 +12,9 @@ import (
 	"time"
 )
 
+// Version is what version of code this is
+var Version string
+
 type status int
 
 const (
@@ -34,11 +37,11 @@ type config struct {
 	Username string   `json:"username"`
 	Repos    []string `json:"repos,omitempty"` // blank == all
 	Token    string   `json:"token"`
-	Services []string `json:"services,omitempty"` // blank == all
-	Successs []string `json:"successStates,omitempty"`
-	Pendings []string `json:"pendingStates,omitempty"`
+	Services []string `json:"services"` // TODO: blank == all
+	Successs []string `json:"successStates"`
+	Pendings []string `json:"pendingStates"`
 	Failures []string `json:"failureStates,omitempty"` // TODO: remove because it's ignored
-	Conficts bool     `json:"hideMergeConflicts"`
+	Conficts bool     `json:"hideMergeConflicts,omitempty"`
 	All      bool     `json:"showAllPrs"`
 
 	// Used for processing
@@ -85,7 +88,7 @@ func (cfg *config) String() string {
 			out = append(out, cfg.Repos[i]+" | size=20\n"+o)
 		}
 	}
-	out = append(out, "Took: "+cfg.duration.String())
+	out = append(out, "Prowler v"+Version+"\nTook: "+cfg.duration.String()+" | alternate=true")
 	return strings.Join(out, "\n---\n")
 }
 
@@ -134,13 +137,6 @@ func (m repoMeta) String() string {
 		out[i] = pr.String()
 	}
 	return strings.Join(out, "\n")
-}
-
-func check(err error, doing string) {
-	if err != nil {
-		fmt.Printf("Error %s: %s\n", doing, err) // TODO: make this a pretty error
-		os.Exit(1)
-	}
 }
 
 type prMeta struct {
@@ -253,6 +249,13 @@ func (m *statsMeta) process(ctx *config) {
 
 func (m statsMeta) String() string {
 	return fmt.Sprintf("-- %s | href=%s color=%s", m.Ctx, m.URL, m.color)
+}
+
+func check(err error, doing string) {
+	if err != nil {
+		fmt.Printf("Error %s: %s\n", doing, err) // TODO: make this a pretty error
+		os.Exit(1)
+	}
 }
 
 func main() {
