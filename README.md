@@ -4,7 +4,7 @@ Prowler
 
 Use prowler to get a quick overview of the state of your PRs.
 
-Quickly jump to 
+Quickly jump to
 * merge conflicts
 * failing CI runs
 
@@ -100,3 +100,7 @@ bool: True if you want to see ALL PRs in your repos. False shows only
 [Workiva](https://www.workiva.com/)
 
 [BitBar](https://github.com/matryer/bitbar)
+
+
+## Notes
+[great documentation](http://jacobian.org/writing/what-to-write/)
