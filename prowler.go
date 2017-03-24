@@ -19,7 +19,7 @@ type config struct {
 	Services []string `json:"services,omitempty"` // blank == all
 	Successs []string `json:"successStates,omitempty"`
 	Pendings []string `json:"pendingStates,omitempty"`
-	Failures []string `json:"failureStates,omitempty"`
+	Failures []string `json:"failureStates,omitempty"` // ignored
 	Conficts bool     `json:"hideMergeConflicts"`
 	All      bool     `json:"showAllPrs"`
 
@@ -58,10 +58,9 @@ func (cfg *config) String() string {
 }
 
 type repoMeta struct {
-	prs    []*prMeta
-	output []byte
-	res    *http.Response
-	err    error
+	prs []*prMeta
+	res *http.Response
+	err error
 }
 
 func (m *repoMeta) process(ctx *config, repo string) {
@@ -98,7 +97,11 @@ func (m repoMeta) String() string {
 	if len(m.prs) == 0 {
 		return ""
 	}
-	return fmt.Sprintf("%s", m.prs)
+	out := make([]string, len(m.prs))
+	for i, pr := range m.prs {
+		out[i] = pr.String()
+	}
+	return strings.Join(out, "\n")
 }
 
 func check(err error, doing string) {
@@ -110,6 +113,7 @@ func check(err error, doing string) {
 
 type prMeta struct {
 	URL   string `json:"url"`
+	Link  string `json:"html_url"`
 	Title string `json:"title"`
 	User  struct {
 		Login string `json:"login"`
@@ -125,10 +129,14 @@ type prMeta struct {
 
 func (m *prMeta) process(ctx *config) {
 	// Self mining to make sure the PR is mergable
-	m.res, m.err = ctx.get(m.URL)
-	if m.err == nil {
-		m.err = json.NewDecoder(m.res.Body).Decode(m)
-		m.res.Body.Close()
+	if !ctx.Conficts {
+		m.res, m.err = ctx.get(m.URL)
+		if m.err == nil {
+			m.err = json.NewDecoder(m.res.Body).Decode(m)
+			m.res.Body.Close()
+		}
+	} else {
+		m.Merge = true
 	}
 
 	// Get Statuses
@@ -139,22 +147,72 @@ func (m *prMeta) process(ctx *config) {
 		m.err = json.NewDecoder(m.res.Body).Decode(&m.stats)
 		m.res.Body.Close()
 	}
+
+	// Get latest status for each target (getLatestStatus)
+	if m.err == nil {
+		unique := make(map[string]*statsMeta, len(m.stats))
+		for _, stat := range m.stats {
+			entry, ok := unique[stat.URL]
+			if !ok || stat.Stamp.After(entry.Stamp) {
+				entry = stat
+			}
+			unique[stat.URL] = entry
+		}
+		m.stats = make([]*statsMeta, 0, len(unique))
+		for _, stat := range unique {
+			for _, slug := range ctx.Services {
+				if strings.Contains(stat.URL, slug) {
+					m.stats = append(m.stats, stat)
+					stat.process(ctx) // TODO: parallel
+					break
+				}
+			}
+		}
+	}
 }
 
 func (m prMeta) String() string {
 	if m.err != nil {
 		return "error = " + m.err.Error() // TODO: pretty error
 	}
-	return fmt.Sprintf("URL: %s; Title: %s; Usr: %s; Mergable: %t, Stats: %s", m.URL, m.Title, m.User.Login, m.Merge, m.stats)
+	out := make([]string, len(m.stats))
+	for i, stat := range m.stats {
+		out[i] = stat.String()
+	}
+	mergable := ""
+	if !m.Merge {
+		mergable = "\U0001F6AB"
+	}
+	// TODO: set color based on sub-statuses
+	return fmt.Sprintf("%s %s| href=%s\n%s", m.Title, mergable, m.Link, strings.Join(out, "\n"))
 }
 
 type statsMeta struct {
-	Ctx   string `json:"context"`
-	State string `json:"state"`
+	Ctx   string    `json:"context"`
+	URL   string    `json:"target_url"`
+	State string    `json:"state"`
+	Stamp time.Time `json:"updated_at"`
+	color string
+}
+
+func (m *statsMeta) process(ctx *config) {
+	m.color = "#bb000"
+	for _, state := range ctx.Successs {
+		if m.State == state {
+			m.color = "#00bb00"
+			return
+		}
+	}
+	for _, state := range ctx.Pendings {
+		if m.State == state {
+			m.color = "#f89406"
+			return
+		}
+	}
 }
 
 func (m statsMeta) String() string {
-	return fmt.Sprintf("ctx: %s, state: %s", m.Ctx, m.State)
+	return fmt.Sprintf("-- %s | href=%s color=%s", m.Ctx, m.URL, m.color)
 }
 
 func main() {
@@ -168,5 +226,6 @@ func main() {
 
 	// Process in parallel
 	cfg.process()
-	fmt.Println("\u2766\n---\n" + cfg.String())
+	// TODO: set logo color based on overall status
+	fmt.Println("\u2766 | color=#00bb00\n---\n" + cfg.String())
 }
