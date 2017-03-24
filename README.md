@@ -46,7 +46,7 @@ Example
   "pendingStates" : [ "pending" ],
   "failureStates" : [ "failure", "failed", "error" ],
   "hideMergeConflicts": false,
-  "showAllPrs": false,
+  "showAllPrs": false
 }
 ```
 
@@ -79,7 +79,7 @@ List<String>: The list of pending states that the CI services can enter.
               Examples: pending, queued, waiting
 ```
 
-#### failureStates
+#### ~~failureStates~~
 ```
 List<String>: The list of failure states that the CI services can enter.
               Examples: failure, failed, error

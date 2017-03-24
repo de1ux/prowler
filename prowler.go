@@ -37,7 +37,7 @@ type config struct {
 	Services []string `json:"services,omitempty"` // blank == all
 	Successs []string `json:"successStates,omitempty"`
 	Pendings []string `json:"pendingStates,omitempty"`
-	Failures []string `json:"failureStates,omitempty"` // ignored
+	Failures []string `json:"failureStates,omitempty"` // TODO: remove because it's ignored
 	Conficts bool     `json:"hideMergeConflicts"`
 	All      bool     `json:"showAllPrs"`
 
@@ -85,7 +85,8 @@ func (cfg *config) String() string {
 			out = append(out, cfg.Repos[i]+" | size=20\n"+o)
 		}
 	}
-	return strings.Join(out, "\n---\n") + "\n---\nTook: " + cfg.duration.String()
+	out = append(out, "Took: "+cfg.duration.String())
+	return strings.Join(out, "\n---\n")
 }
 
 type repoMeta struct {
@@ -223,7 +224,6 @@ func (m prMeta) String() string {
 	if !m.Merge {
 		mergable = "\U0001F6AB"
 	}
-	// TODO: set color based on sub-statuses
 	return fmt.Sprintf("%s %s| href=%s color=%s\n%s", m.Title, mergable, m.Link, m.color, strings.Join(out, "\n"))
 }
 
@@ -266,6 +266,5 @@ func main() {
 
 	// Process in parallel
 	cfg.process()
-	// TODO: set logo color based on overall status
 	fmt.Printf("\u2766 | color=%s\n---\n%s", cfg.color, cfg.String())
 }
