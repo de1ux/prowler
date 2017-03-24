@@ -109,26 +109,52 @@ func check(err error, doing string) {
 }
 
 type prMeta struct {
-	Num   int    `json:"number"`
+	URL   string `json:"url"`
 	Title string `json:"title"`
 	User  struct {
 		Login string `json:"login"`
 	} `json:"user"` // TODO(benchmark): use lazy json.RawMessage here and check for substring existance
 	Stats string `json:"statuses_url"`
+	Merge bool   `json:"mergeable"`
 
 	// processing stuff
-	err error
+	stats []*statsMeta
+	res   *http.Response
+	err   error
 }
 
 func (m *prMeta) process(ctx *config) {
-	// m.err = errors.New("TODO")
+	// Self mining to make sure the PR is mergable
+	m.res, m.err = ctx.get(m.URL)
+	if m.err == nil {
+		m.err = json.NewDecoder(m.res.Body).Decode(m)
+		m.res.Body.Close()
+	}
+
+	// Get Statuses
+	if m.err == nil {
+		m.res, m.err = ctx.get(m.Stats)
+	}
+	if m.err == nil {
+		m.err = json.NewDecoder(m.res.Body).Decode(&m.stats)
+		m.res.Body.Close()
+	}
 }
 
 func (m prMeta) String() string {
 	if m.err != nil {
 		return "error = " + m.err.Error() // TODO: pretty error
 	}
-	return fmt.Sprintf("#: %d; Title: %s; Usr: %s; Stats: %s", m.Num, m.Title, m.User.Login, m.Stats)
+	return fmt.Sprintf("URL: %s; Title: %s; Usr: %s; Mergable: %t, Stats: %s", m.URL, m.Title, m.User.Login, m.Merge, m.stats)
+}
+
+type statsMeta struct {
+	Ctx   string `json:"context"`
+	State string `json:"state"`
+}
+
+func (m statsMeta) String() string {
+	return fmt.Sprintf("ctx: %s, state: %s", m.Ctx, m.State)
 }
 
 func main() {
