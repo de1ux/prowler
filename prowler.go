@@ -25,13 +25,13 @@ type config struct {
 
 	// Used for processing
 	wg       sync.WaitGroup
-	metadata []meta
+	metadata []repoMeta
 	duration time.Duration
 }
 
 func (cfg *config) process() {
 	start := time.Now()
-	cfg.metadata = make([]meta, len(cfg.Repos))
+	cfg.metadata = make([]repoMeta, len(cfg.Repos))
 	cfg.wg.Add(len(cfg.Repos))
 	for i, repo := range cfg.Repos {
 		go cfg.metadata[i].process(cfg, repo)
@@ -54,33 +54,60 @@ func (cfg *config) String() string {
 	return strings.Join(out, "\n---\n") + "\n---\nTook: " + cfg.duration.String()
 }
 
-type meta struct {
+type repoMeta struct {
+	prs    []*prMeta
 	output []byte
 	res    *http.Response
 	err    error
 }
 
-func (m *meta) process(ctx *config, repo string) {
+func (m *repoMeta) process(ctx *config, repo string) {
 	m.res, m.err = ctx.get("/repos/" + repo + "/pulls")
 	if m.err == nil {
-		m.output, m.err = ioutil.ReadAll(m.res.Body)
+		m.err = json.NewDecoder(m.res.Body).Decode(&m.prs)
 		m.res.Body.Close()
 	}
+
+	// Filter to only my pull requests (filterPullRequestsByUser)
+	if m.err == nil && !ctx.All {
+		filtered := make([]*prMeta, 0)
+		for _, pr := range m.prs {
+			if pr.User.Login == ctx.Username {
+				filtered = append(filtered, pr)
+			}
+		}
+		m.prs = filtered
+	}
+
+	// TODO: Fetch Statuses of the PR (fetchStatuses)
 	ctx.wg.Done()
 }
 
-func (m meta) String() string {
+func (m repoMeta) String() string {
 	if m.err != nil {
-		return "error = " + m.err.Error()
+		return "error = " + m.err.Error() // TODO: make this a pretty error
 	}
-	return string(m.output[:20])
+	if len(m.prs) == 0 {
+		return ""
+	}
+	return fmt.Sprintf("%s", m.prs)
 }
 
 func check(err error, doing string) {
 	if err != nil {
-		fmt.Printf("Error %s: %s\n", doing, err)
+		fmt.Printf("Error %s: %s\n", doing, err) // TODO: make this a pretty error
 		os.Exit(1)
 	}
+}
+
+type prMeta struct {
+	User struct {
+		Login string `json:"login"`
+	} `json:"user"` // TODO: use lazy json.RawMessage here and check for substring existance
+}
+
+func (m prMeta) String() string {
+	return "User:" + m.User.Login
 }
 
 func main() {
