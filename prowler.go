@@ -41,7 +41,10 @@ func (cfg *config) process() {
 }
 
 func (cfg *config) get(uri string) (*http.Response, error) {
-	return http.Get("https://api.github.com" + uri + "?oauth_token=" + cfg.Token)
+	if !strings.HasPrefix(uri, "https://api.github.com") {
+		uri = "https://api.github.com" + uri
+	}
+	return http.Get(uri + "?oauth_token=" + cfg.Token)
 }
 
 func (cfg *config) String() string {
@@ -79,7 +82,12 @@ func (m *repoMeta) process(ctx *config, repo string) {
 		m.prs = filtered
 	}
 
-	// TODO: Fetch Statuses of the PR (fetchStatuses)
+	// Fetch Statuses of the PR (fetchStatuses)
+	if m.err == nil {
+		for _, pr := range m.prs {
+			pr.process(ctx) // TODO: parallel
+		}
+	}
 	ctx.wg.Done()
 }
 
@@ -101,13 +109,26 @@ func check(err error, doing string) {
 }
 
 type prMeta struct {
-	User struct {
+	Num   int    `json:"number"`
+	Title string `json:"title"`
+	User  struct {
 		Login string `json:"login"`
-	} `json:"user"` // TODO: use lazy json.RawMessage here and check for substring existance
+	} `json:"user"` // TODO(benchmark): use lazy json.RawMessage here and check for substring existance
+	Stats string `json:"statuses_url"`
+
+	// processing stuff
+	err error
+}
+
+func (m *prMeta) process(ctx *config) {
+	// m.err = errors.New("TODO")
 }
 
 func (m prMeta) String() string {
-	return "User:" + m.User.Login
+	if m.err != nil {
+		return "error = " + m.err.Error() // TODO: pretty error
+	}
+	return fmt.Sprintf("#: %d; Title: %s; Usr: %s; Stats: %s", m.Num, m.Title, m.User.Login, m.Stats)
 }
 
 func main() {
