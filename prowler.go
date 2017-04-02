@@ -181,11 +181,11 @@ func (m *prMeta) process(ctx *config) {
 	if m.err == nil {
 		unique := make(map[string]*statsMeta, len(m.stats))
 		for _, stat := range m.stats {
-			entry, ok := unique[stat.URL]
+			entry, ok := unique[stat.Ctx]
 			if !ok || stat.Stamp.After(entry.Stamp) {
 				entry = stat
 			}
-			unique[stat.URL] = entry
+			unique[stat.Ctx] = entry
 		}
 		m.stats = make([]*statsMeta, 0, len(unique))
 		for _, stat := range unique {
