@@ -13,7 +13,7 @@ func main() {
 		panic(err)
 	}
 
-	path := filepath.Join(user.HomeDir, ".prowler2.conf")
+	path := filepath.Join(user.HomeDir, ".prowler2.json")
 	config, err := common.LoadConfig(path)
 	if err != nil {
 		panic(err)
