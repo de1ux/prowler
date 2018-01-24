@@ -6,15 +6,16 @@ import (
 	"fmt"
 	"net/http"
 	"regexp"
+	"strings"
 
-	"github.com/de1ux/prowler/services/v1"
+	services "github.com/de1ux/prowler/services/v1"
 	vcs "github.com/de1ux/prowler/vcs/v1"
 )
 
 var jiraRegex = regexp.MustCompile("([A-z]+-[0-9]+)")
-var bambooStateToState = map[string]v1.State{
-	"Successful": v1.Passing,
-	"Failed":     v1.Failed,
+var bambooStateToState = map[string]services.State{
+	"Successful": services.Passing,
+	"Failed":     services.Failed,
 }
 
 const (
@@ -23,7 +24,7 @@ const (
 	searchPlansTemplate = baseUrl + "/latest/result/%s.json"
 )
 
-func NewClient(config *Config) v1.Client {
+func NewClient(config *Config) services.Client {
 	return &Client{config: config}
 }
 
@@ -31,7 +32,7 @@ type Client struct {
 	config *Config
 }
 
-func (c *Client) GetStatusByPullRequest(pr *vcs.PullRequest) (*v1.Status, error) {
+func (c *Client) GetStatusByPullRequest(pr *vcs.PullRequest) (*services.Status, error) {
 	// Try to parse a JIRA ticket out of the PR title
 	matches := jiraRegex.FindAllString(pr.Title, 1)
 	if matches == nil || len(matches) < 1 {
@@ -107,9 +108,11 @@ func (c *Client) GetStatusByPullRequest(pr *vcs.PullRequest) (*v1.Status, error)
 		return nil, nil
 	}
 
-	return &v1.Status{
+	hrefParts := strings.Split(planPayload.Results.Result[0].Link.Href, "/")
+
+	return &services.Status{
 		Name:  "Bamboo",
-		URL:   planPayload.Results.Result[0].Link.Href,
+		URL:   fmt.Sprintf("%s/browse/%s", c.config.host, hrefParts[len(hrefParts)-1]),
 		State: state,
 	}, nil
 }

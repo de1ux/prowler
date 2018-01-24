@@ -5,8 +5,8 @@ import (
 	services "github.com/de1ux/prowler/services/v1"
 	vcs "github.com/de1ux/prowler/vcs/v1"
 
-	bamboo "github.com/de1ux/prowler/services/v1/bamboo"
-	bitbucket "github.com/de1ux/prowler/vcs/v1/bitbucket"
+	"github.com/de1ux/prowler/services/v1/bamboo"
+	"github.com/de1ux/prowler/vcs/v1/bitbucket"
 )
 
 type integration func(config *config.Config) (vcs.Client, []services.Client, error)
@@ -39,6 +39,8 @@ func RunIntegration(config *config.Config) (*Manifest, error) {
 	}
 
 	for _, repo := range config.Vcs.Repos {
+		manifest.Entries[repo] = []*Entry{}
+
 		prs, err := vcs.GetPullRequestsByRepo(repo)
 		if err != nil {
 			return nil, err
