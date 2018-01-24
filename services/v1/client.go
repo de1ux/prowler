@@ -7,10 +7,10 @@ import (
 type State int
 
 const (
-	passing State = iota
-	pending
-	failed
-	errored
+	Passing State = iota
+	Pending
+	Failed
+	Errored
 )
 
 type Status struct {
@@ -20,5 +20,5 @@ type Status struct {
 }
 
 type Client interface {
-	GetStatusesByPullRequest(pr *v1.PullRequest) ([]*Status, error)
+	GetStatusByPullRequest(pr *v1.PullRequest) (*Status, error)
 }

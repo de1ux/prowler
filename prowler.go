@@ -40,7 +40,7 @@ type config struct {
 	Services []string `json:"services"` // TODO: blank == all
 	Successs []string `json:"successStates"`
 	Pendings []string `json:"pendingStates"`
-	Failures []string `json:"failureStates,omitempty"` // TODO: remove because it's ignored
+	Failures []string `json:"failureState,omitempty"` // TODO: remove because it's ignored
 	Conficts bool     `json:"hideMergeConflicts,omitempty"`
 	All      bool     `json:"showAllPrs"`
 

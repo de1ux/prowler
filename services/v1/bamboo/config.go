@@ -9,6 +9,7 @@ import (
 type Config struct {
 	username string
 	password string
+	host     string
 }
 
 func NewConfig(config *v1.Config) (c *Config, err error) {
@@ -19,26 +20,27 @@ func NewConfig(config *v1.Config) (c *Config, err error) {
 	}()
 	c = &Config{}
 
-	m, ok := config.Services.Options.(map[string]interface{})
+	if len(config.Services) != 1 {
+		// TODO - this is a hack
+		panic(fmt.Sprintf("Bamboo is only configured to work by itself"))
+	}
+
+	m, ok := config.Services[0].(map[string]interface{})
 	if !ok {
-		panic(fmt.Sprintf("Failed to coerce: %v", ok))
+		panic(fmt.Sprintf("Failed to coerce to map of interfaces: %v", ok))
 	}
 
 	c.username, ok = m["username"].(string)
 	if !ok {
 		panic("Failed to parse username")
 	}
-	c.token, ok = m["token"].(string)
+	c.password, ok = m["password"].(string)
 	if !ok {
-		panic("Failed to parse token")
+		panic("Failed to parse password")
 	}
-	c.hideMergeConflicts, ok = m["hideMergeConflicts"].(bool)
+	c.host, ok = m["host"].(string)
 	if !ok {
-		panic("Failed to parse hideMergeConflicts")
-	}
-	c.showAllPrs, ok = m["showAllPrs"].(bool)
-	if !ok {
-		panic("Failed to parse showAllPrs")
+		panic("Failed to parse host")
 	}
 
 	return

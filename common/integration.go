@@ -24,7 +24,7 @@ var integrations = map[string]integration{
 			return nil, nil, err
 		}
 
-		return bitbucket.NewClient(bitbucketConfig), bamboo.NewClient(bambooConfig), nil
+		return bitbucket.NewClient(bitbucketConfig), []services.Client{bamboo.NewClient(bambooConfig)}, nil
 	},
 }
 
@@ -34,7 +34,9 @@ func RunIntegration(config *config.Config) (*Manifest, error) {
 		return nil, err
 	}
 
-	manifest := &Manifest{}
+	manifest := &Manifest{
+		Entries: map[string][]*Entry{},
+	}
 
 	for _, repo := range config.Vcs.Repos {
 		prs, err := vcs.GetPullRequestsByRepo(repo)
@@ -45,13 +47,16 @@ func RunIntegration(config *config.Config) (*Manifest, error) {
 		for _, pr := range prs {
 			entry := &Entry{Pr: pr}
 			for _, service := range services {
-				statuses, err := service.GetStatusesByPullRequest(pr)
+				status, err := service.GetStatusByPullRequest(pr)
 				if err != nil {
 					return nil, err
 				}
-				entry.Statuses = append(entry.Statuses, statuses...)
+				if status == nil {
+					continue
+				}
+				entry.Statuses = append(entry.Statuses, status)
 			}
-			manifest.Entries = append(manifest.Entries, entry)
+			manifest.Entries[repo] = append(manifest.Entries[repo], entry)
 		}
 	}
 

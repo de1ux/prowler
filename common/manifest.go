@@ -6,7 +6,9 @@ import (
 )
 
 type Manifest struct {
-	Entries []*Entry
+	Entries  map[string][]*Entry
+	Version  string
+	Duration string
 }
 
 type Entry struct {
