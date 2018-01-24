@@ -35,11 +35,11 @@ func main() {
 	manifest.Version = Version
 	manifest.Duration = duration.String()
 
-	tmpl, err := template.New("out.sh").Funcs(template.FuncMap{
+	tmpl, err := template.New("").Funcs(template.FuncMap{
 		"colorPr":     common.ColorPr,
 		"colorStatus": common.ColorStatus,
 		"colorIcon":   common.ColorIcon,
-	}).Parse(common.BitbarTemplate)
+	}).Parse(common.BitbarManifestTemplate)
 	if err != nil {
 		panic(err)
 	}

@@ -1,7 +1,6 @@
 package bamboo
 
 import (
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -46,7 +45,6 @@ func (c *Client) GetStatusByPullRequest(pr *vcs.PullRequest) (*services.Status, 
 		return nil, err
 	}
 
-	req.Header.Add("Authorization", fmt.Sprintf("Basic %s", c.basicAuth()))
 	res, err := client.Do(req)
 	if err != nil {
 		return nil, err
@@ -75,7 +73,6 @@ func (c *Client) GetStatusByPullRequest(pr *vcs.PullRequest) (*services.Status, 
 		return nil, err
 	}
 
-	req.Header.Add("Authorization", fmt.Sprintf("Basic %s", c.basicAuth()))
 	res, err = client.Do(req)
 	if err != nil {
 		return nil, err
@@ -115,8 +112,4 @@ func (c *Client) GetStatusByPullRequest(pr *vcs.PullRequest) (*services.Status, 
 		URL:   fmt.Sprintf("%s/browse/%s", c.config.host, hrefParts[len(hrefParts)-1]),
 		State: state,
 	}, nil
-}
-
-func (c *Client) basicAuth() string {
-	return base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", c.config.username, c.config.password)))
 }

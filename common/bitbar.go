@@ -1,6 +1,6 @@
 package common
 
-const BitbarTemplate = "{{printf \"\u2766\"}} | color={{colorIcon .}}\n" +
+const BitbarManifestTemplate = "{{printf \"\u2766\"}} | color={{colorIcon .}}\n" +
 	"---\n" +
 	"{{range $repo, $entries := .Entries}}" +
 	"" +
@@ -20,4 +20,4 @@ const BitbarTemplate = "{{printf \"\u2766\"}} | color={{colorIcon .}}\n" +
 	"" +
 	"{{end}}" +
 	"---\n" +
-	"Prowler v{{.Version}}; loaded in: {{.Duration}} | alternate=true\n"
+	"SoFi Prowler v{{.Version}}; loaded in: {{.Duration}} | alternate=true\n"

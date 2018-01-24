@@ -7,9 +7,7 @@ import (
 )
 
 type Config struct {
-	username string
-	password string
-	host     string
+	host string
 }
 
 func NewConfig(config *v1.Config) (c *Config, err error) {
@@ -30,14 +28,6 @@ func NewConfig(config *v1.Config) (c *Config, err error) {
 		panic(fmt.Sprintf("Failed to coerce to map of interfaces: %v", ok))
 	}
 
-	c.username, ok = m["username"].(string)
-	if !ok {
-		panic("Failed to parse username")
-	}
-	c.password, ok = m["password"].(string)
-	if !ok {
-		panic("Failed to parse password")
-	}
 	c.host, ok = m["host"].(string)
 	if !ok {
 		panic("Failed to parse host")

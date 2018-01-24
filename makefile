@@ -1,5 +1,5 @@
 # Documentation: https://www.gnu.org/software/make/manual/html_node/index.html
-VERSION=0.0.0.`git rev-parse --short HEAD`
+VERSION=0.2.0.`git rev-parse --short HEAD`
 GOFLAGS=-i -v -ldflags "-s -w -X main.Version=${VERSION}" -installsuffix cgo
 
 prowler.1m.cgo: prowler2.go
