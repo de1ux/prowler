@@ -2,11 +2,11 @@ Prowler
 =======
 *Prowl your PRs*
 
-Use prowler to get a quick overview of the state of your PRs.
-
 Quickly jump to
-* merge conflicts
-* failing CI runs
+* merge conflicts on your PRs
+* passing/pending/failed CI builds
+
+Support for GitHub and Bitbucket!
 
 ![Sweet demo](demo.png)
 
