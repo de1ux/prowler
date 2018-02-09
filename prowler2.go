@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"os/user"
 	"path/filepath"
@@ -23,7 +24,7 @@ func main() {
 	path := filepath.Join(user.HomeDir, ".prowler.json")
 	config, err := common.LoadConfig(path)
 	if err != nil {
-		panic(err)
+		panic(fmt.Errorf("Failed to parse the json in ~/.prowler.json: %s", err))
 	}
 
 	manifest, err := common.RunIntegration(config)

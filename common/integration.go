@@ -1,6 +1,8 @@
 package common
 
 import (
+	"fmt"
+
 	config "github.com/de1ux/prowler/config/v1"
 	services "github.com/de1ux/prowler/services/v1"
 	vcs "github.com/de1ux/prowler/vcs/v1"
@@ -43,7 +45,7 @@ func RunIntegration(config *config.Config) (*Manifest, error) {
 
 		prs, err := vcs.GetPullRequestsByRepo(repo)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("Failed to get Bitbucket PRs, is the API token and username correct? %s", err)
 		}
 
 		for _, pr := range prs {
@@ -51,7 +53,7 @@ func RunIntegration(config *config.Config) (*Manifest, error) {
 			for _, service := range services {
 				status, err := service.GetStatusByPullRequest(pr)
 				if err != nil {
-					return nil, err
+					return nil, fmt.Errorf("Failed to get Bamboo builds: %s", err)
 				}
 				if status == nil {
 					continue

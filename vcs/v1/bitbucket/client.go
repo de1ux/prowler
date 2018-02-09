@@ -63,6 +63,7 @@ func (c *Client) GetPullRequestsByRepo(repo string) ([]*v1.PullRequest, error) {
 			Title:     item.Title,
 			URL:       item.Links.Html.Href,
 			Conflicts: nil,
+			Repo:      repo,
 		})
 	}
 
