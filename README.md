@@ -99,6 +99,8 @@ bool: True if you want to see ALL PRs in your repos. False shows only
 ## Thanks
 [Workiva](https://www.workiva.com/)
 
+[SoFi](https://www.sofi.com/)
+
 [BitBar](https://github.com/matryer/bitbar)
 
 
