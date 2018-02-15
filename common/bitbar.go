@@ -21,5 +21,4 @@ const BitbarManifestTemplate = "{{printf \"\u2766\"}} | color={{colorIcon .}}\n"
 	"{{end}}" +
 	"---\n" +
 	"SoFi Prowler v{{.Version}}; loaded in: {{.Duration}} | alternate=true\n" +
-	"---\n" +
-	"Edit configuration | bash=/bin/sh\n"
+	"---\n"
