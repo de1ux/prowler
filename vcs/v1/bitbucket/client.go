@@ -22,49 +22,59 @@ type Client struct {
 	config *Config
 }
 
+type pullRequestResponse struct {
+	Values []struct {
+		Author struct {
+			Username string
+		}
+		Title string
+		Links struct {
+			Html struct {
+				Href string
+			}
+		}
+	}
+	Next string
+}
+
 func (c *Client) GetPullRequestsByRepo(repo string) ([]*v1.PullRequest, error) {
 	client := &http.Client{}
-	req, err := http.NewRequest("GET", fmt.Sprintf(repoUrlTemplate, repo), nil)
-	if err != nil {
-		return nil, err
-	}
 
-	req.Header.Add("Authorization", fmt.Sprintf("Basic %s", c.basicAuth()))
-	res, err := client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-
-	var payload = struct {
-		Values []struct {
-			Author struct {
-				Username string
-			}
-			Title string
-			Links struct {
-				Html struct {
-					Href string
-				}
-			}
-		}
-	}{}
-
-	if err = json.NewDecoder(res.Body).Decode(&payload); err != nil {
-		return nil, err
-	}
-
+	nextUrl := fmt.Sprintf(repoUrlTemplate, repo)
 	prs := make([]*v1.PullRequest, 0)
-	for _, item := range payload.Values {
-		if !c.config.showAllPrs && item.Author.Username != c.config.username {
-			continue
+
+	for nextUrl != "" {
+		req, err := http.NewRequest("GET", nextUrl, nil)
+		if err != nil {
+			return nil, err
 		}
 
-		prs = append(prs, &v1.PullRequest{
-			Title:     item.Title,
-			URL:       item.Links.Html.Href,
-			Conflicts: nil,
-			Repo:      repo,
-		})
+		req.Header.Add("Authorization", fmt.Sprintf("Basic %s", c.basicAuth()))
+		res, err := client.Do(req)
+		if err != nil {
+			return nil, err
+		}
+
+		payload := &pullRequestResponse{}
+
+		if err = json.NewDecoder(res.Body).Decode(payload); err != nil {
+			return nil, err
+		}
+
+		for _, item := range payload.Values {
+			if !c.config.showAllPrs && item.Author.Username != c.config.username {
+				continue
+			}
+
+			prs = append(prs, &v1.PullRequest{
+				Title:     item.Title,
+				URL:       item.Links.Html.Href,
+				Conflicts: nil,
+				Repo:      repo,
+			})
+		}
+
+		nextUrl = payload.Next
 	}
 
 	return prs, nil
