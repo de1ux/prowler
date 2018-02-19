@@ -15,7 +15,7 @@ clean:
 
 release: prowler.1m.cgo release/BitBarDistro.app release/bundler.sh
 	@if [ -d release/Prowler.app ] ; then rm -r release/Prowler.app ; fi
-	@if [ -d prowler.tar.gz ] ; then rm prowler.tar.gz
+	@if [ -d prowler.tar.gz ] ; then rm prowler.tar.gz ; fi
 	cp -R release/BitBarDistro.app release/Prowler.app
 	./release/bundler.sh release/Prowler.app prowler.1m.cgo
 	tar -cvf prowler.tar.gz release/Prowler.app
