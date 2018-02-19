@@ -2,11 +2,11 @@ Prowler
 =======
 *Prowl your PRs*
 
-Use prowler to get a quick overview of the state of your PRs.
-
 Quickly jump to
-* merge conflicts
-* failing CI runs
+* merge conflicts on your PRs
+* passing/pending/failed CI builds
+
+Support for GitHub and Bitbucket!
 
 ![Sweet demo](demo.png)
 
@@ -98,6 +98,8 @@ bool: True if you want to see ALL PRs in your repos. False shows only
 
 ## Thanks
 [Workiva](https://www.workiva.com/)
+
+[SoFi](https://www.sofi.com/)
 
 [BitBar](https://github.com/matryer/bitbar)
 
