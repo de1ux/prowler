@@ -67,14 +67,31 @@ var integrations = map[string]integration{
 			return nil, err
 		}
 
-		github.NewClient(githubConfig)
+		githubClient := github.NewClient(githubConfig)
 		travis.NewClient(travisConfig)
+
+		for _, repo := range config.Vcs.Repos {
+			prs, err := githubClient.GetPullRequestsByRepo(repo)
+			if err != nil {
+				return nil, fmt.Errorf("Failed to get Github PRs, is the API token correct? %s", err)
+			}
+
+			println(prs)
+		}
 
 		return nil, nil
 	},
 }
 
 func RunIntegration(config *config.Config) (*Manifest, error) {
-	// TODO - check exists
-	return integrations[config.Integration](config)
+	i, exists := integrations[config.Integration]
+	if !exists {
+		keys := []string{}
+		for key, _ := range integrations {
+			keys = append(keys, key)
+		}
+
+		return nil, fmt.Errorf("'%s' is not a valid integration, please choose from %+v", keys)
+	}
+	return i(config)
 }
