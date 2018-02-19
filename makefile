@@ -11,11 +11,14 @@ test:
 clean:
 	@if [ -d release ] ; then rm -r release ; fi
 	@if [ -f prowler.1m.cgo ] ; then rm prowler.1m.cgo ; fi
+	@if [ -d prowler.tar.gz ] ; then rm prowler.tar.gz
 
 release: prowler.1m.cgo release/BitBarDistro.app release/bundler.sh
 	@if [ -d release/Prowler.app ] ; then rm -r release/Prowler.app ; fi
+	@if [ -d prowler.tar.gz ] ; then rm prowler.tar.gz
 	cp -R release/BitBarDistro.app release/Prowler.app
 	./release/bundler.sh release/Prowler.app prowler.1m.cgo
+	tar -cvf prowler.tar.gz release/Prowler.app
 
 # These files are distributed from BitBar and should not be modified
 release/BitBarDistro.app:
