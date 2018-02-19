@@ -2,8 +2,11 @@
 VERSION=0.2.0.`git rev-parse --short HEAD`
 GOFLAGS=-i -v -ldflags "-s -w -X main.Version=${VERSION}" -installsuffix cgo
 
-prowler.1m.cgo: prowler2.go
-	go build ${GOFLAGS} -o prowler.1m.cgo prowler2.go
+prowler.1m.cgo: prowler.go
+	go build ${GOFLAGS} -o prowler.1m.cgo prowler.go
+
+test:
+	go test -v ./...
 
 clean:
 	@if [ -d release ] ; then rm -r release ; fi
