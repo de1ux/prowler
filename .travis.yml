@@ -8,6 +8,7 @@ deploy:
   api_key:
     secure: oLWthpab+mDNNh7qxAeKsjEJioxTfrF/Ud8S87wbLSgWNOr5msWzQ5XRZLJhxCqYD/zamqH5MHR7HX6qe/hOHKIKN+JOB4x2l7HPI2rGwwz0tp/nhCY1H/ChxNoq5bIR+150+7b6KWHKpwkrUHUHqJcWRsDf8B9wVHhuL7huv7M1/NIhDFxbK/CEmrIxf3jwuKExDb8TqMU1b7P1HSE2gLsl5H2yTiBigXX0IjbWtR4uAYHBlcajPGkGiEMs0/APMClOBGZFUt6AbHPjawOYjGLsiXHiHx+htC5sBRj4af0ZjFJ1msS8cu7G2ns4PJIiMTyFB4ApCyYa++nSLhcm9KgT6cUFcRuRxVE0zHmjLhSdpwdGKNaOJn/smnGYfXQsH8OPIkVjbzhqDHpT3uXo/ypQ8pyJhGpJVjDgOS3wPhxjDC9+JcBt61fU1otQMvSG65qLqBh7FtSf41DYlZq/x9jluMctg1wRtrIp1n0IuElK9WlWEIsO3vtpBlPrhfc2m3TPuB0xAeBh6Qu2MC+bieHdJcQwyOoGwEOPQUzRbvXALrnTKp/Jp1m207b+jjIw7CbV2tex/wUXTTnOLy04or8F9CF1HQy6Oy+gSszT9uoUmB+Ov/KV/mC3OJS5K99F1E4i19Ppq+9Tr4d88kPFTXzrsCUHNIw/77E5Lyu6zT0=
   file: prowler.tar.gz
+  skip_cleanup: true
   on:
     repo: de1ux/prowler
     tags: true

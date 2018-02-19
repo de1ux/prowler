@@ -75,5 +75,6 @@ var integrations = map[string]integration{
 }
 
 func RunIntegration(config *config.Config) (*Manifest, error) {
+	// TODO - check exists
 	return integrations[config.Integration](config)
 }
