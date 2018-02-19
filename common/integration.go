@@ -6,7 +6,9 @@ import (
 	config "github.com/de1ux/prowler/config/v1"
 
 	"github.com/de1ux/prowler/services/v1/bamboo"
+	"github.com/de1ux/prowler/services/v1/travis"
 	"github.com/de1ux/prowler/vcs/v1/bitbucket"
+	"github.com/de1ux/prowler/vcs/v1/github"
 )
 
 type integration func(config *config.Config) (*Manifest, error)
@@ -55,6 +57,19 @@ var integrations = map[string]integration{
 		return manifest, nil
 	},
 	"github_and_travis": func(config *config.Config) (*Manifest, error) {
+		githubConfig, err := github.NewConfig(config)
+		if err != nil {
+			return nil, err
+		}
+
+		travisConfig, err := travis.NewConfig(config)
+		if err != nil {
+			return nil, err
+		}
+
+		github.NewClient(githubConfig)
+		travis.NewClient(travisConfig)
+
 		return nil, nil
 	},
 }

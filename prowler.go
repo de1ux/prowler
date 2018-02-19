@@ -11,7 +11,7 @@ import (
 	"github.com/de1ux/prowler/common"
 )
 
-// Version is what version of code this is
+// Version is set by makefile
 var Version string
 
 func main() {
@@ -24,7 +24,7 @@ func main() {
 	path := filepath.Join(user.HomeDir, ".prowler.json")
 	config, err := common.LoadConfig(path)
 	if err != nil {
-		panic(fmt.Errorf("Failed to parse the json in ~/.prowler.json: %s", err))
+		panic(fmt.Errorf("Failed to parse ~/.prowler.json: %s", err))
 	}
 
 	manifest, err := common.RunIntegration(config)
@@ -41,6 +41,7 @@ func main() {
 		"colorStatus": common.ColorStatus,
 		"colorIcon":   common.ColorIcon,
 	}).Parse(common.BitbarManifestTemplate)
+
 	if err != nil {
 		panic(err)
 	}
