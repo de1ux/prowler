@@ -11,7 +11,7 @@ test:
 clean:
 	@if [ -d release ] ; then rm -r release ; fi
 	@if [ -f prowler.1m.cgo ] ; then rm prowler.1m.cgo ; fi
-	@if [ -d prowler.tar.gz ] ; then rm prowler.tar.gz
+	@if [ -d prowler.tar.gz ] ; then rm prowler.tar.gz ; fi
 
 release: prowler.1m.cgo release/BitBarDistro.app release/bundler.sh
 	@if [ -d release/Prowler.app ] ; then rm -r release/Prowler.app ; fi
