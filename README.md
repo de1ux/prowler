@@ -8,6 +8,8 @@ Quickly jump to
 
 Support for GitHub and Bitbucket!
 
+[![Build Status](https://travis-ci.org/de1ux/prowler.svg?branch=master)](https://travis-ci.org/de1ux/prowler)[![Go Report Card](https://goreportcard.com/badge/github.com/de1ux/prowler)](https://goreportcard.com/report/github.com/de1ux/prowler)
+
 ![Sweet demo](demo.png)
 
 ## Setup
